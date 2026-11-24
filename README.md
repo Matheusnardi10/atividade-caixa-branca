@@ -177,7 +177,45 @@ Se o desvio excepcional não fosse modelado, V(G) seria 2.
 
 ## 6. Caminhos básicos
 
-*(será preenchido na Etapa 2)*
+Para cada método eu escolhi um conjunto de caminhos independentes. Cada caminho passa por
+pelo menos uma aresta que os anteriores ainda não tinham usado, e a quantidade de caminhos
+é igual ao V(G) do método. Eu não listei todos os caminhos possíveis, principalmente por causa
+do laço `while`, que poderia repetir várias vezes. O conjunto que escolhi não é o único
+possível, mas o tamanho dele é sempre o mesmo. Tudo foi feito sobre o código original.
+
+### 6.1 Método `consultarQuantidade` (V(G) = 5, então 5 caminhos)
+
+| Caminho | Nós percorridos | Quando acontece | Aresta nova |
+|---|---|---|---|
+| P1 | N1 → N2 → N7 | O `estoque.csv` existe, mas está vazio. O `while` termina na primeira leitura e o método devolve 0. | N1→N2, N2→N7 |
+| P2 | N1 → N2 → N3 → N4 → N5 → N7 | O código procurado está na primeira linha. O método converte a quantidade e sai pelo `break`. | N2→N3, N3→N4, N4→N5, N5→N7 |
+| P3 | N1 → N2 → N3 → N4 → N2 → N7 | O arquivo tem linhas, mas nenhuma com o código procurado. O laço lê tudo e devolve 0. | N4→N2 |
+| P4 | N1 → N6 → N7 | O `estoque.csv` não existe (`FileNotFoundException`). Cai no `catch` vazio e devolve 0. | N1→N6, N6→N7 |
+| P5 | N1 → N2 → N6 → N7 | Dá erro de leitura (`IOException`) no meio do `readLine`. Cai no `catch` vazio e devolve 0. | N2→N6 |
+
+Observações:
+- P1, P3, P4 e P5 devolvem 0 e o chamador não consegue saber qual foi o motivo. Isso é o problema do `catch` vazio que apontei na análise estática.
+- O P5 é difícil de provocar com um arquivo de verdade, e por isso vou tratá-lo na seção 7.
+- Para testar o laço, além dos 5 caminhos, também vou usar: zero iterações (P1), uma iteração (P2), várias iterações (código na 3ª linha, que repete N2 → N3 → N4 → N2) e o código na última linha do arquivo.
+
+### 6.2 Método `registrarSaida` (V(G) = 3, então 3 caminhos)
+
+| Caminho | Nós percorridos | Quando acontece | Aresta nova |
+|---|---|---|---|
+| P1 | N1 → N2 → N6 → N7 | A quantidade pedida é maior que o saldo. Não grava nada e devolve `false`. | N1→N2, N2→N6, N6→N7 |
+| P2 | N1 → N2 → N3 → N4 → N7 | A quantidade é menor ou igual ao saldo e a gravação funciona. Atualiza `ultimaMovimentacao` e devolve `true`. | N2→N3, N3→N4, N4→N7 |
+| P3 | N1 → N2 → N3 → N5 → N6 → N7 | A quantidade é menor ou igual ao saldo, mas a gravação dá `IOException`. Cai no `catch` vazio e devolve `false`. | N3→N5, N5→N6 |
+
+No P3, o método devolve `false` igual ao P1, mas por outro motivo. Quem chama não consegue
+diferenciar saldo insuficiente de falha na gravação.
+
+### 6.3 Como os dois métodos se influenciam
+
+O `registrarSaida` chama o `consultarQuantidade` logo no começo (N1), então o caminho que a
+consulta faz muda o caminho do `registrarSaida`. Dois exemplos com o arquivo `estoque.csv`
+inexistente (P4 da consulta, que devolve 0):
+- `registrarSaida("A001", 5)` cai no P1 (saldo insuficiente), mas o motivo real é que o arquivo não existe.
+- `registrarSaida("A001", 0)` cai no P2 e devolve `true`, mesmo sem o produto e sem o arquivo.
 
 ## 7. Matriz de casos de teste e resultados
 
