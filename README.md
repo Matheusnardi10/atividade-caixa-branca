@@ -91,7 +91,50 @@ O código usa `colunas[1]` sem checar se a linha tem duas colunas e converte com
 
 ## 4. Grafos de fluxo e convenções
 
-*(será preenchido na Etapa 2)*
+**Convenções usadas:**
+- Cada nó é um bloco de comandos em sequência ou uma decisão (`if`, `while`).
+- O `return` é o nó de saída. Quando há mais de um `return`, as saídas se juntam em um nó único.
+- O `break` foi contado como uma aresta que sai do laço.
+- Foi modelado o desvio para o `catch` de `IOException`, porque é a única exceção capturada. Esses desvios aparecem tracejados em vermelho.
+- `NumberFormatException` e `ArrayIndexOutOfBoundsException` (linha 18) não foram modeladas, porque o código não as captura.
+
+**Como os dois métodos se relacionam:** o `registrarSaida` chama o `consultarQuantidade` logo no primeiro nó (N1). Quando a consulta falha por erro de leitura, ela devolve 0, e esse 0 entra na decisão do `if` do `registrarSaida`. Por isso um erro de leitura pode acabar virando "saldo insuficiente".
+
+### 4.1 Método `consultarQuantidade`
+
+| Nó | Linhas | Descrição |
+|---|---|---|
+| N1 | 11 a 14 | `quantidade = 0`, abre o arquivo e declara `linha` |
+| N2 | 15 | `while ((linha = leitor.readLine()) != null)` |
+| N3 | 16 | `colunas = linha.split(";")` |
+| N4 | 17 | `if (colunas[0].equals(codigo))` |
+| N5 | 18 e 19 | `parseInt(...)` e `break` |
+| N6 | 22 a 24 | `catch (IOException e)` |
+| N7 | 25 | `return quantidade` |
+
+**Arestas:** N1→N2, N2→N3, N3→N4, N4→N5, N4→N2, N5→N7 (`break`), N2→N7 (fim do arquivo).
+**Arestas excepcionais:** N1→N6 (arquivo não encontrado), N2→N6 (falha em `readLine`), N6→N7.
+
+![Grafo de consultarQuantidade](diagramas/grafo_consultarQuantidade.png)
+
+### 4.2 Método `registrarSaida`
+
+| Nó | Linhas | Descrição |
+|---|---|---|
+| N1 | 29 | `disponivel = consultarQuantidade(codigo)` |
+| N2 | 30 | `if (quantidade <= disponivel)` |
+| N3 | 32 e 33 | abre o `FileWriter` e escreve |
+| N4 | 34 e 35 | `ultimaMovimentacao = codigo` e `return true` |
+| N5 | 36 a 38 | `catch (IOException e)` |
+| N6 | 40 | `return false` |
+| N7 | - | saída única (une os dois `return`) |
+
+**Arestas:** N1→N2, N2→N3 (saldo suficiente), N2→N6 (saldo insuficiente), N3→N4, N4→N7, N6→N7.
+**Arestas excepcionais:** N3→N5 (IOException ao abrir ou escrever), N5→N6.
+
+![Grafo de registrarSaida](diagramas/grafo_registrarSaida.png)
+
+Os arquivos-fonte dos grafos (`.drawio`) estão na pasta `diagramas/`.
 
 ## 5. Cálculo de V(G) por método
 
