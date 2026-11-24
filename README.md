@@ -219,7 +219,64 @@ inexistente (P4 da consulta, que devolve 0):
 
 ## 7. Matriz de casos de teste e resultados
 
-*(será preenchido nas Etapas 2 e 3)*
+Montei os casos de teste a partir dos caminhos básicos da seção 6, e incluí casos normais,
+de limite, de erro e de entrada inválida.
+
+O "resultado esperado" é o comportamento **correto** que o método deveria ter, e não o que o
+código original faz hoje. Quando o original não faz isso, o teste falha, e essa falha comprova
+o defeito encontrado na análise estática.
+
+**Arquivo padrão usado nos testes** (`estoque.csv`):
+
+```
+A001;10
+B002;0
+C003;25
+```
+
+### 7.1 Casos de teste planejados
+
+| ID | Método | Caminho | Entrada | Pré-condição | Resultado esperado |
+|---|---|---|---|---|---|
+| CT01 | `consultarQuantidade` | P1 | `"A001"` | `estoque.csv` existe e está vazio | retorna 0 |
+| CT02 | `consultarQuantidade` | P2 | `"A001"` | arquivo padrão | retorna 10 (código na 1ª linha) |
+| CT03 | `consultarQuantidade` | P2 (laço com várias iterações) | `"C003"` | arquivo padrão | retorna 25 (código na 3ª linha) |
+| CT04 | `consultarQuantidade` | P3 | `"Z999"` | arquivo padrão | retorna 0 (produto sem saldo) |
+| CT05 | `consultarQuantidade` | P4 | `"A001"` | `estoque.csv` não existe | informa o erro ao chamador (não retorna 0 como se fosse saldo) |
+| CT06 | `consultarQuantidade` | P5 | `"A001"` | falha de leitura no meio do arquivo (`IOException`) | informa o erro ao chamador (não retorna 0) |
+| CT07 | `consultarQuantidade` | P2 (limite) | `"A001"` | arquivo com a linha `A001` (sem `;`) | trata a linha inválida, sem estourar `ArrayIndexOutOfBoundsException` |
+| CT08 | `consultarQuantidade` | P2 (limite) | `"A001"` | arquivo com a linha `A001;abc` | trata o valor inválido, sem estourar `NumberFormatException` |
+| CT09 | `consultarQuantidade` | P3 | `null` | arquivo padrão | rejeita a entrada inválida com erro claro |
+| CT10 | `registrarSaida` | P2 | `"A001"`, 5 | arquivo padrão | retorna `true`, grava `A001;5` em `movimentacoes.txt` e `ultimaMovimentacao` = `A001` |
+| CT11 | `registrarSaida` | P2 (limite) | `"A001"`, 10 | arquivo padrão | retorna `true` (quantidade igual ao saldo) e grava a linha |
+| CT12 | `registrarSaida` | P1 (limite) | `"A001"`, 11 | arquivo padrão | retorna `false` e não grava nada |
+| CT13 | `registrarSaida` | P3 | `"A001"`, 5 | `movimentacoes.txt` não pode ser gravado (`IOException`) | informa a falha de gravação (diferente de saldo insuficiente) e `ultimaMovimentacao` não muda |
+| CT14 | `registrarSaida` | P2 (entrada inválida) | `"A001"`, 0 | arquivo padrão | rejeita (quantidade deve ser maior que 0) e não grava |
+| CT15 | `registrarSaida` | P2 (entrada inválida) | `"A001"`, -5 | arquivo padrão | rejeita e não grava |
+| CT16 | `registrarSaida` | P2 (entrada inválida) | `"Z999"`, 0 | arquivo padrão (produto não existe) | rejeita, porque o produto não existe |
+| CT17 | `registrarSaida` | P2 duas vezes | `"A001"`, 10 e depois `"A001"`, 10 | arquivo padrão (saldo 10) | 1ª retorna `true`, 2ª retorna `false` (o saldo já acabou) |
+| CT18 | `registrarSaida` + `consultarQuantidade` | P1 da consulta (P4) e P2 | `"A001"`, 0 | `estoque.csv` não existe | rejeita ou informa erro (não retorna `true`) |
+
+### 7.2 Resultados da execução
+
+*(será preenchido na Etapa 3, depois de executar os testes no código original e no revisado)*
+
+| ID | Resultado observado (original) | Situação (original) | Evidência | Resultado observado (revisado) | Situação (revisado) |
+|---|---|---|---|---|---|
+| CT01 a CT18 | a executar | a executar | a executar | a executar | a executar |
+
+### 7.3 Caminhos difíceis de provocar e como simular
+
+- **P5 de `consultarQuantidade` (erro no meio da leitura):** com um arquivo de verdade quase
+  não dá para forçar. No original também não, porque o nome do arquivo está fixo dentro do
+  método. Na versão revisada, vou receber o leitor de fora (injeção) e usar um *test double*
+  (uma classe falsa que lança `IOException` no `readLine`).
+- **P3 de `registrarSaida` (erro de gravação):** dá para simular no original transformando
+  `movimentacoes.txt` em uma **pasta** com o mesmo nome (o `FileWriter` falha ao abrir) ou
+  deixando o arquivo somente leitura. Na revisada, também posso usar um escritor falso.
+- **P4 (arquivo inexistente):** é fácil, basta não criar o `estoque.csv`.
+- **Condição de corrida (duas saídas ao mesmo tempo):** é difícil de provocar de forma
+  confiável. Eu simularia com duas threads chamando `registrarSaida` ao mesmo tempo.
 
 ## 8. Correções implementadas e comparação antes/depois
 
