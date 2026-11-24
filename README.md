@@ -138,7 +138,42 @@ Os arquivos-fonte dos grafos (`.drawio`) estão na pasta `diagramas/`.
 
 ## 5. Cálculo de V(G) por método
 
-*(será preenchido na Etapa 2)*
+Fórmula usada: **V(G) = E − N + 2P**, com P = 1, porque cada grafo tem um único componente conectado.
+
+| Método | N | E | P | V(G) = E − N + 2P | Regiões | D + 1 |
+|---|---|---|---|---|---|---|
+| `consultarQuantidade` | 7 | 10 | 1 | 10 − 7 + 2 = **5** | 5 | 4 + 1 = 5 |
+| `registrarSaida` | 7 | 8 | 1 | 8 − 7 + 2 = **3** | 3 | 2 + 1 = 3 |
+
+### 5.1 `consultarQuantidade`
+
+**Verificação por regiões (4 internas + a externa = 5):**
+- R1: o laço formado por N2, N3 e N4 (aresta de volta N4→N2).
+- R2: entre o caminho N2→N3→N4→N5→N7 e a aresta direta N2→N7 (fim do arquivo).
+- R3: entre N2→N7, N2→N6 e N6→N7.
+- R4: o triângulo formado por N1, N2 e N6.
+- R5: a região externa, fora do grafo.
+
+**Verificação por decisões (D + 1):** são 4 decisões binárias: o `if` (N4), o `while` (N2, que tem 3 saídas e conta como 2 decisões: continuar ou sair, e o desvio de `IOException`) e o desvio de `IOException` em N1. Logo D = 4 e V(G) = 4 + 1 = 5.
+
+Se os desvios excepcionais não fossem modelados, V(G) seria 3 (só o `while` e o `if`).
+
+### 5.2 `registrarSaida`
+
+**Verificação por regiões (2 internas + a externa = 3):**
+- R1: formada por N2, N3, N5 e N6.
+- R2: formada por N3, N4, N7, N6 e N5.
+- R3: a região externa.
+
+**Verificação por decisões (D + 1):** são 2 decisões binárias: o `if` (N2) e o desvio de `IOException` em N3. Logo D = 2 e V(G) = 2 + 1 = 3.
+
+Se o desvio excepcional não fosse modelado, V(G) seria 2.
+
+### Convenções aplicadas
+- O código não tem `switch`, então essa convenção não se aplica.
+- Cada desvio para o `catch` foi contado como uma decisão adicional.
+- O `break` e os `return` foram contados na topologia (N5→N7, N4→N7 e N6→N7).
+- Os valores foram calculados sobre o código original, antes das correções.
 
 ## 6. Caminhos básicos
 
