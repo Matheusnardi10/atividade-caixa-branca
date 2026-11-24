@@ -34,15 +34,30 @@ atividade-caixa-branca/
 
 ## 2. Instruções de execução
 
-**Código original:** para compilar, abrir o terminal na pasta `original` e rodar:
+Todos os comandos abaixo são executados no terminal, na **raiz do projeto** (a pasta que
+contém `original`, `testes` e `evidencias`). É preciso ter o JDK instalado (usei o Java 21).
+
+**Código original:** a classe `EstoqueArquivo` não tem método `main`, então ela não executa
+sozinha. Ela é feita para ser chamada por outra classe ou por testes. Para só conferir que
+compila, rodo:
 
 ```
-javac EstoqueArquivo.java
+javac original\EstoqueArquivo.java
 ```
 
-A classe não tem método `main`, então ela não executa sozinha. Ela é feita para ser chamada por outra classe ou por testes.
+**Testes do código original:** o programa `testes/TestesOriginal.java` roda os 18 casos
+de teste da seção 7. Para compilar e executar:
 
-**Versão revisada e testes:** *(será preenchido na Etapa 3)*
+```
+javac -d testes\out original\EstoqueArquivo.java testes\TestesOriginal.java
+java -cp testes\out TestesOriginal
+```
+
+O resultado aparece no terminal e também é gravado em
+`evidencias/saida_testes_original.txt`. Cada caso roda em uma pasta temporária, então
+os arquivos `estoque.csv` e `movimentacoes.txt` são criados do zero e nada fica sujo no projeto.
+
+**Versão revisada e seus testes:** *(será preenchido na Etapa 3)*
 
 ---
 
@@ -259,11 +274,47 @@ C003;25
 
 ### 7.2 Resultados da execução
 
-*(será preenchido na Etapa 3, depois de executar os testes no código original e no revisado)*
+Para executar os testes do código original, abro o terminal na raiz do projeto e rodo:
 
-| ID | Resultado observado (original) | Situação (original) | Evidência | Resultado observado (revisado) | Situação (revisado) |
-|---|---|---|---|---|---|
-| CT01 a CT18 | a executar | a executar | a executar | a executar | a executar |
+```
+javac -d testes\out original\EstoqueArquivo.java testes\TestesOriginal.java
+java -cp testes\out TestesOriginal
+```
+
+A saída completa está em `evidencias/saida_testes_original.txt`.
+
+**Resultado no código original:** 5 testes passaram, 12 falharam e 1 não pôde ser executado.
+
+| ID | Resultado observado (original) | Situação (original) | Evidência |
+|---|---|---|---|
+| CT01 | retorno = 0 | Passou | `evidencias/saida_testes_original.txt` |
+| CT02 | retorno = 10 | Passou | idem |
+| CT03 | retorno = 25 | Passou | idem |
+| CT04 | retorno = 0 | Passou | idem |
+| CT05 | retorno = 0 (arquivo inexistente, sem aviso de erro) | **Falhou** | idem |
+| CT06 | não há como injetar um leitor que falhe no original | Não executado | idem |
+| CT07 | `ArrayIndexOutOfBoundsException` | **Falhou** | idem |
+| CT08 | `NumberFormatException` | **Falhou** | idem |
+| CT09 | retorno = 0 (código nulo aceito) | **Falhou** | idem |
+| CT10 | retorno = `true`, mas `movimentacoes.txt` ficou vazio | **Falhou** | idem |
+| CT11 | retorno = `true`, mas `movimentacoes.txt` ficou vazio | **Falhou** | idem |
+| CT12 | retorno = `false`, nada gravado | Passou | idem |
+| CT13 | retorno = `false` (falha de gravação sem aviso) | **Falhou** | idem |
+| CT14 | retorno = `true` com quantidade 0 | **Falhou** | idem |
+| CT15 | retorno = `true` com quantidade negativa | **Falhou** | idem |
+| CT16 | retorno = `true` para código inexistente | **Falhou** | idem |
+| CT17 | 1ª e 2ª saídas retornaram `true`; `estoque.csv` continuou com `A001;10` | **Falhou** | idem |
+| CT18 | retorno = `true` com o arquivo inexistente | **Falhou** | idem |
+
+**Resultado no código revisado:** *(será preenchido na Etapa 3)*
+
+**O que os resultados mostram:**
+- Os casos normais (CT01 a CT04 e CT12) passam, então o código funciona quando tudo dá certo.
+- CT10 e CT11 comprovam que o `FileWriter` não é fechado: o método avisa que deu certo, mas a movimentação não é gravada.
+- CT17 comprova que o saldo nunca diminui.
+- CT05, CT13 e CT18 comprovam que os `catch` vazios escondem os erros.
+- CT14, CT15 e CT16 comprovam a falta de validação da quantidade.
+- CT07 e CT08 comprovam que linhas mal formadas estouram exceções sem tratamento.
 
 ### 7.3 Caminhos difíceis de provocar e como simular
 

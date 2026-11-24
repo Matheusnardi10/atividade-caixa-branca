@@ -1,0 +1,26 @@
+TESTES DO CODIGO ORIGINAL - EstoqueArquivo
+Executado em: 2026-11-24T16:30:56.311193800
+Java: 21.0.13
+
+ID    METODO               SITUACAO       CASO                                       OBSERVADO
+----------------------------------------------------------------------------------------------------------------------------------
+CT01  consultarQuantidade  PASSOU         arquivo vazio                              retorno=0
+CT02  consultarQuantidade  PASSOU         codigo na 1a linha                         retorno=10
+CT03  consultarQuantidade  PASSOU         codigo na 3a linha (varias iteracoes)      retorno=25
+CT04  consultarQuantidade  PASSOU         codigo inexistente                         retorno=0
+CT05  consultarQuantidade  FALHOU         estoque.csv nao existe                     retorno=0
+CT06  consultarQuantidade  NAO EXECUTADO  IOException no meio da leitura             nao ha como injetar um leitor que falhe no original
+CT07  consultarQuantidade  FALHOU         linha sem ponto e virgula                  excecao=ArrayIndexOutOfBoundsException
+CT08  consultarQuantidade  FALHOU         quantidade nao numerica                    excecao=NumberFormatException
+CT09  consultarQuantidade  FALHOU         codigo nulo                                retorno=0
+CT10  registrarSaida       FALHOU         saida de 5 (saldo 10)                      retorno=true movimentacoes.txt= ultima=A001
+CT11  registrarSaida       FALHOU         saida de 10 (igual ao saldo)               retorno=true movimentacoes.txt= ultima=A001
+CT12  registrarSaida       PASSOU         saida de 11 (maior que o saldo)            retorno=false movimentacoes.txt=(nao existe)
+CT13  registrarSaida       FALHOU         falha de gravacao (IOException)            retorno=false ultima=''
+CT14  registrarSaida       FALHOU         quantidade 0                               retorno=true movimentacoes.txt=
+CT15  registrarSaida       FALHOU         quantidade negativa                        retorno=true movimentacoes.txt=
+CT16  registrarSaida       FALHOU         codigo inexistente com quantidade 0        retorno=true movimentacoes.txt=
+CT17  registrarSaida       FALHOU         duas saidas de 10 (saldo 10)               1a=true 2a=true estoque.csv=A001;10\nB002;0\nC003;25\n
+CT18  registrarSaida       FALHOU         estoque.csv inexistente com quantidade 0   retorno=true
+
+RESUMO: 5 passaram, 12 falharam, 1 nao executados/erro (total 18)
