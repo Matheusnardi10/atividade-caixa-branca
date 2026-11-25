@@ -1,0 +1,28 @@
+TESTES DO CODIGO REVISADO - EstoqueArquivo
+Executado em: 2026-11-24T16:41:56.033418200
+Java: 21.0.13
+
+ID    METODO               SITUACAO       CASO                                       OBSERVADO
+----------------------------------------------------------------------------------------------------------------------------------
+CT01  consultarQuantidade  PASSOU         arquivo vazio                              retorno=0
+CT02  consultarQuantidade  PASSOU         codigo na 1a linha                         retorno=10
+CT03  consultarQuantidade  PASSOU         codigo na 3a linha (varias iteracoes)      retorno=25
+CT04  consultarQuantidade  PASSOU         codigo inexistente                         retorno=0
+CT05  consultarQuantidade  PASSOU         estoque.csv nao existe                     excecao=NoSuchFileException
+CT06  consultarQuantidade  PASSOU         IOException na leitura (test double)       excecao=IOException
+CT07  consultarQuantidade  PASSOU         linha sem ponto e virgula                  excecao=IOException
+CT08  consultarQuantidade  PASSOU         quantidade nao numerica                    excecao=IOException
+CT09  consultarQuantidade  PASSOU         codigo nulo                                excecao=IllegalArgumentException
+CT10  registrarSaida       PASSOU         saida de 5 (saldo 10)                      retorno=true movimentacoes.txt=A001;5\n ultima=A001
+CT11  registrarSaida       PASSOU         saida de 10 (igual ao saldo)               retorno=true movimentacoes.txt=A001;10\n ultima=A001
+CT12  registrarSaida       PASSOU         saida de 11 (maior que o saldo)            retorno=false movimentacoes.txt=(nao existe)
+CT13  registrarSaida       PASSOU         falha de gravacao (test double)            excecao=IOException ultima=''
+CT14  registrarSaida       PASSOU         quantidade 0                               excecao=IllegalArgumentException movimentacoes.txt=(nao existe)
+CT15  registrarSaida       PASSOU         quantidade negativa                        excecao=IllegalArgumentException movimentacoes.txt=(nao existe)
+CT16  registrarSaida       PASSOU         codigo inexistente com quantidade 0        excecao=IllegalArgumentException movimentacoes.txt=(nao existe)
+CT17  registrarSaida       PASSOU         duas saidas de 10 (saldo 10)               1a=true 2a=false movimentacoes.txt=A001;10\n
+CT18  registrarSaida       PASSOU         estoque.csv inexistente com quantidade 0   excecao=IllegalArgumentException
+CT19  registrarSaida       PASSOU         codigo com ponto e virgula (injecao)       excecao=IllegalArgumentException movimentacoes.txt=(nao existe)
+CT20  registrarSaida       PASSOU         8 threads de 5 com saldo 10                saidas aceitas=2 de 8 movimentacoes.txt=A001;5\nA001;5\n
+
+RESUMO: 20 passaram, 0 falharam, 0 nao executados/erro (total 20)
