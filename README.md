@@ -401,18 +401,22 @@ A versão revisada está em `revisado/EstoqueArquivo.java`, com comentários `CO
 
 ### 8.3 O que mudou na complexidade ciclomática
 
-Para comparar as duas versões com a mesma regra, contei as decisões (`if`, `while`, `catch`, `?:` e cada `&&` ou `||`) e usei V(G) = D + 1. Eu não redesenhei os grafos da revisada.
+Para comparar as duas versões, utilizei a contagem de decisões (`if`, `while`, `catch`, `?:` e cada `&&` ou `||`), aplicando a fórmula V(G) = D + 1. Na versão original, também considerei os grafos apresentados na seção 5, incluindo os desvios excepcionais modelados. Para a versão revisada, a complexidade foi calculada individualmente para cada método.
 
-| Método | Original (grafo, seção 5) | Original (decisões) | Revisado (decisões) |
-|---|---|---|---|
-| `consultarQuantidade` | 5 | 4 | 2 |
-| `registrarSaida` | 3 | 3 | 3 |
-| `somarQuantidade` (novo) | - | - | 6 |
-| `validarCodigo` (novo) | - | - | 6 |
+| Método | Original (D) | Original V(G) | Revisado (D) | Revisado V(G) |
+|---|---:|---:|---:|---:|
+| `consultarQuantidade` | 4 | 5 | 2 | 3 |
+| `registrarSaida` | 2 | 3 | 3 | 4 |
+| `somarQuantidade` (novo) | - | - | 6 | 7 |
+| `validarCodigo` (novo) | - | - | 6 | 7 |
 
-No original, o grafo da seção 5 deu 5 porque eu modelei dois pontos que podem lançar `IOException` (abrir o arquivo e ler a linha). Pela contagem simples de decisões dá 4.
+No código original, os grafos da seção 5 resultaram em V(G) = 5 para `consultarQuantidade` e V(G) = 3 para `registrarSaida`. Esses valores consideram os desvios excepcionais de abertura, leitura e gravação de arquivos, conforme a modelagem apresentada nos diagramas.
 
-O V(G) total subiu de 7 para 17. Isso aconteceu porque o código agora faz as validações e os tratamentos de erro que o original ignorava. A complexidade ficou espalhada em métodos pequenos e nenhum passa de 6 caminhos, então continua fácil de testar. Para mim, o aumento não piorou o código, porque cada decisão nova resolve um problema que encontrei na análise estática.
+Na versão revisada, os valores foram calculados pela quantidade de decisões de cada método, utilizando V(G) = D + 1.
+
+Somando os valores individuais dos métodos analisados, temos 8 na versão original (5 + 3) e 21 na versão revisada (3 + 4 + 7 + 7). Essa soma é apenas comparativa, pois a versão revisada possui métodos auxiliares que não existiam originalmente, não representando a complexidade de um único grafo global.
+
+O aumento da complexidade está relacionado à inclusão de validações, verificações de condições de borda e tratamentos de erros. Essas decisões adicionais foram introduzidas para corrigir problemas identificados na análise estática. Portanto, o aumento não representa necessariamente uma piora na qualidade do código, pois as responsabilidades foram distribuídas entre métodos menores e mais específicos, facilitando a manutenção e os testes.
 
 ### 8.4 O que não corrigi
 
