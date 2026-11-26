@@ -405,16 +405,16 @@ Para comparar as duas versões, utilizei a contagem de decisões (`if`, `while`,
 
 | Método | Original (D) | Original V(G) | Revisado (D) | Revisado V(G) |
 |---|---:|---:|---:|---:|
-| `consultarQuantidade` | 4 | 5 | 2 | 3 |
-| `registrarSaida` | 2 | 3 | 3 | 4 |
-| `somarQuantidade` (novo) | - | - | 6 | 7 |
-| `validarCodigo` (novo) | - | - | 6 | 7 |
+| `consultarQuantidade` | 4 | 5 | 1 | 2 |
+| `registrarSaida` | 2 | 3 | 2 | 3 |
+| `somarQuantidade` (novo) | - | - | 5 | 6 |
+| `validarCodigo` (novo) | - | - | 5 | 6 |
 
 No código original, os grafos da seção 5 resultaram em V(G) = 5 para `consultarQuantidade` e V(G) = 3 para `registrarSaida`. Esses valores consideram os desvios excepcionais de abertura, leitura e gravação de arquivos, conforme a modelagem apresentada nos diagramas.
 
 Na versão revisada, os valores foram calculados pela quantidade de decisões de cada método, utilizando V(G) = D + 1.
 
-Somando os valores individuais dos métodos analisados, temos 8 na versão original (5 + 3) e 21 na versão revisada (3 + 4 + 7 + 7). Essa soma é apenas comparativa, pois a versão revisada possui métodos auxiliares que não existiam originalmente, não representando a complexidade de um único grafo global.
+Somando os valores individuais dos métodos analisados, temos 8 na versão original (5 + 3) e 17 na versão revisada (2 + 3 + 6 + 6). Essa soma é apenas comparativa, pois a versão revisada possui métodos auxiliares que não existiam originalmente, não representando a complexidade de um único grafo global.
 
 O aumento da complexidade está relacionado à inclusão de validações, verificações de condições de borda e tratamentos de erros. Essas decisões adicionais foram introduzidas para corrigir problemas identificados na análise estática. Portanto, o aumento não representa necessariamente uma piora na qualidade do código, pois as responsabilidades foram distribuídas entre métodos menores e mais específicos, facilitando a manutenção e os testes.
 
