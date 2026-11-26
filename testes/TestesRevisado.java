@@ -48,7 +48,7 @@ public class TestesRevisado {
         {"CT15", "registrarSaida", "quantidade negativa"},
         {"CT16", "registrarSaida", "codigo inexistente com quantidade 0"},
         {"CT17", "registrarSaida", "duas saidas de 10 (saldo 10)"},
-        {"CT18", "registrarSaida", "estoque.csv inexistente com quantidade 0"},
+        {"CT18", "registrarSaida", "estoque.csv inexistente com quantidade 5"},
         {"CT19", "registrarSaida", "codigo com ponto e virgula (injecao)"},
         {"CT20", "registrarSaida", "8 threads de 5 com saldo 10"},
     };
@@ -252,9 +252,9 @@ public class TestesRevisado {
                 resultado(ok, "1a=" + r1 + " 2a=" + r2 + " movimentacoes.txt=" + lerArquivo("movimentacoes.txt"));
                 break;
             }
-            case "CT18": {   // estoque.csv inexistente com quantidade 0 -> nao pode retornar true
-                Object r = tentar(() -> e.registrarSaida("A001", 0));
-                resultado(rejeitou(r), descrever(r));
+            case "CT18": {   // estoque.csv inexistente: deve informar o erro de leitura, e nao devolver false como se fosse saldo insuficiente
+                Object r = tentar(() -> e.registrarSaida("A001", 5));
+                resultado(r instanceof Throwable, descrever(r));
                 break;
             }
             case "CT19": {   // codigo com ';' (tentativa de forjar linha) -> deve rejeitar

@@ -1,5 +1,5 @@
 TESTES DO CODIGO REVISADO - EstoqueArquivo
-Executado em: 2026-11-24T16:41:56.033418200
+Executado em: 2026-11-25T22:57:32.914100100
 Java: 21.0.13
 
 ID    METODO               SITUACAO       CASO                                       OBSERVADO
@@ -21,7 +21,7 @@ CT14  registrarSaida       PASSOU         quantidade 0                          
 CT15  registrarSaida       PASSOU         quantidade negativa                        excecao=IllegalArgumentException movimentacoes.txt=(nao existe)
 CT16  registrarSaida       PASSOU         codigo inexistente com quantidade 0        excecao=IllegalArgumentException movimentacoes.txt=(nao existe)
 CT17  registrarSaida       PASSOU         duas saidas de 10 (saldo 10)               1a=true 2a=false movimentacoes.txt=A001;10\n
-CT18  registrarSaida       PASSOU         estoque.csv inexistente com quantidade 0   excecao=IllegalArgumentException
+CT18  registrarSaida       PASSOU         estoque.csv inexistente com quantidade 5   excecao=NoSuchFileException
 CT19  registrarSaida       PASSOU         codigo com ponto e virgula (injecao)       excecao=IllegalArgumentException movimentacoes.txt=(nao existe)
 CT20  registrarSaida       PASSOU         8 threads de 5 com saldo 10                saidas aceitas=2 de 8 movimentacoes.txt=A001;5\nA001;5\n
 

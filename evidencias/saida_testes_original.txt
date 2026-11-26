@@ -1,5 +1,5 @@
 TESTES DO CODIGO ORIGINAL - EstoqueArquivo
-Executado em: 2026-11-24T16:30:56.311193800
+Executado em: 2026-11-25T22:56:34.729509200
 Java: 21.0.13
 
 ID    METODO               SITUACAO       CASO                                       OBSERVADO
@@ -21,6 +21,6 @@ CT14  registrarSaida       FALHOU         quantidade 0                          
 CT15  registrarSaida       FALHOU         quantidade negativa                        retorno=true movimentacoes.txt=
 CT16  registrarSaida       FALHOU         codigo inexistente com quantidade 0        retorno=true movimentacoes.txt=
 CT17  registrarSaida       FALHOU         duas saidas de 10 (saldo 10)               1a=true 2a=true estoque.csv=A001;10\nB002;0\nC003;25\n
-CT18  registrarSaida       FALHOU         estoque.csv inexistente com quantidade 0   retorno=true
+CT18  registrarSaida       FALHOU         estoque.csv inexistente com quantidade 5   retorno=false
 
 RESUMO: 5 passaram, 12 falharam, 1 nao executados/erro (total 18)

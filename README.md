@@ -315,46 +315,52 @@ C003;25
 |---|---|---|---|
 | CT13 | P3 | Fazer o `movimentacoes.txt` não poder ser gravado (`IOException`) e registrar `"A001"`, 5 | Informa a falha de gravação (diferente de saldo insuficiente) e `ultimaMovimentacao` não muda |
 | CT17 | P2 duas vezes | Registrar `"A001"`, 10 e logo depois `"A001"`, 10 | A 1ª retorna `true` e a 2ª retorna `false` (o saldo acabou) |
-| CT18 | P4 da consulta e P2 | Não criar o `estoque.csv` e registrar `"A001"`, 0 | Rejeita ou informa o erro, não retorna `true` |
+| CT18 | P4 da consulta e P1 (no original) | Não criar o `estoque.csv` e registrar `"A001"`, 5 | Informa o erro de leitura e não retorna `false` como se fosse saldo insuficiente |
 | CT19 (só revisada) | P2 | Registrar `"A001;999"`, 1 | Rejeita (o código tem `;`) e não grava |
 | CT20 (só revisada) | P2 com acesso ao mesmo tempo | 8 threads, cada uma registrando `"A001"`, 5 | Só 2 saídas são aceitas e o arquivo fica com 2 linhas |
 
 O CT19 e o CT20 eu criei depois, só para provar correções da versão revisada. Nos casos CT06 e CT13 da versão revisada, a falha de leitura e a de gravação são simuladas com *test doubles* (explico na seção 7.3).
 
-### 7.2 Resultados da execução
+### 7.2 Matriz de casos de teste e resultados
 
-Rodei os testes no mesmo computador (Windows, Java 21) nas duas versões. As saídas completas estão em `evidencias/saida_testes_original.txt` e `evidencias/saida_testes_revisado.txt`.
+Rodei os testes no mesmo computador (Windows, Java 21) nas duas versões. A matriz abaixo junta,
+para cada caso, tudo o que aconteceu: método, caminho, entrada, pré-condição, resultado esperado,
+o que foi observado em cada versão, a situação e a evidência.
 
-**Resumo:** no código original, 5 testes passaram, 12 falharam e 1 não deu para executar. No código revisado, os 20 testes passaram.
+**Resumo:** no código original, 5 testes passaram, 12 falharam e 1 não deu para executar.
+No código revisado, os 20 testes passaram.
 
-| ID | Observado no original | Situação (original) | Observado no revisado | Situação (revisado) |
-|---|---|---|---|---|
-| CT01 | retorno = 0 | Passou | retorno = 0 | Passou |
-| CT02 | retorno = 10 | Passou | retorno = 10 | Passou |
-| CT03 | retorno = 25 | Passou | retorno = 25 | Passou |
-| CT04 | retorno = 0 | Passou | retorno = 0 | Passou |
-| CT05 | retorno = 0, sem aviso de erro | **Falhou** | `NoSuchFileException` | Passou |
-| CT06 | não dá para simular no original | Não executado | `IOException` (test double) | Passou |
-| CT07 | `ArrayIndexOutOfBoundsException` | **Falhou** | `IOException` com mensagem clara | Passou |
-| CT08 | `NumberFormatException` | **Falhou** | `IOException` com mensagem clara | Passou |
-| CT09 | retorno = 0 (código nulo aceito) | **Falhou** | `IllegalArgumentException` | Passou |
-| CT10 | `true`, mas `movimentacoes.txt` vazio | **Falhou** | `true` e arquivo com `A001;5` | Passou |
-| CT11 | `true`, mas `movimentacoes.txt` vazio | **Falhou** | `true` e arquivo com `A001;10` | Passou |
-| CT12 | `false`, nada gravado | Passou | `false`, nada gravado | Passou |
-| CT13 | `false`, falha de gravação sem aviso | **Falhou** | `IOException` | Passou |
-| CT14 | `true` com quantidade 0 | **Falhou** | `IllegalArgumentException` | Passou |
-| CT15 | `true` com quantidade negativa | **Falhou** | `IllegalArgumentException` | Passou |
-| CT16 | `true` para código inexistente | **Falhou** | `IllegalArgumentException` | Passou |
-| CT17 | 1ª e 2ª saídas `true`; `estoque.csv` não mudou | **Falhou** | 1ª `true` e 2ª `false` | Passou |
-| CT18 | `true` com o arquivo inexistente | **Falhou** | `IllegalArgumentException` | Passou |
-| CT19 | não executado (caso só da revisada) | - | `IllegalArgumentException`, nada gravado | Passou |
-| CT20 | não executado (caso só da revisada) | - | 2 saídas aceitas de 8; arquivo com 2 linhas | Passou |
+| ID | Método | Caminho | Entrada | Pré-condição | Resultado esperado | Observado no original | Situação (original) | Observado no revisado | Situação (revisado) | Evidência |
+|---|---|---|---|---|---|---|---|---|---|---|
+| CT01 | `consultarQuantidade` | P1 | `"A001"` | `estoque.csv` vazio | retorna 0 | retorno = 0 | Passou | retorno = 0 | Passou | linha CT01 dos 2 `.txt` |
+| CT02 | `consultarQuantidade` | P2 | `"A001"` | arquivo padrão | retorna 10 | retorno = 10 | Passou | retorno = 10 | Passou | linha CT02 dos 2 `.txt` |
+| CT03 | `consultarQuantidade` | P2 (várias iterações) | `"C003"` | arquivo padrão | retorna 25 | retorno = 25 | Passou | retorno = 25 | Passou | linha CT03 dos 2 `.txt` |
+| CT04 | `consultarQuantidade` | P3 | `"Z999"` | arquivo padrão | retorna 0 | retorno = 0 | Passou | retorno = 0 | Passou | linha CT04 dos 2 `.txt` |
+| CT05 | `consultarQuantidade` | P4 | `"A001"` | `estoque.csv` não existe | informa o erro, não retorna 0 | retorno = 0, sem aviso de erro | **Falhou** | `NoSuchFileException` | Passou | linha CT05 dos 2 `.txt` |
+| CT06 | `consultarQuantidade` | P5 | `"A001"` | falha de leitura simulada (`IOException`) | informa o erro, não retorna 0 | não dá para simular no original | Não executado | `IOException` (test double) | Passou | linha CT06 dos 2 `.txt` |
+| CT07 | `consultarQuantidade` | P2 (limite) | `"A001"` | linha `A001` sem `;` | trata a linha, sem `ArrayIndexOutOfBoundsException` | `ArrayIndexOutOfBoundsException` | **Falhou** | `IOException` com mensagem clara | Passou | linha CT07 dos 2 `.txt` |
+| CT08 | `consultarQuantidade` | P2 (limite) | `"A001"` | linha `A001;abc` | trata o valor, sem `NumberFormatException` | `NumberFormatException` | **Falhou** | `IOException` com mensagem clara | Passou | linha CT08 dos 2 `.txt` |
+| CT09 | `consultarQuantidade` | P3 | `null` | arquivo padrão | rejeita com erro claro | retorno = 0 (código nulo aceito) | **Falhou** | `IllegalArgumentException` | Passou | linha CT09 dos 2 `.txt` |
+| CT10 | `registrarSaida` | P2 | `"A001"`, 5 | arquivo padrão | `true`, grava `A001;5` e `ultimaMovimentacao` = `A001` | `true`, mas `movimentacoes.txt` vazio | **Falhou** | `true` e arquivo com `A001;5` | Passou | linha CT10 dos 2 `.txt` |
+| CT11 | `registrarSaida` | P2 (limite) | `"A001"`, 10 | arquivo padrão | `true` e grava a linha | `true`, mas `movimentacoes.txt` vazio | **Falhou** | `true` e arquivo com `A001;10` | Passou | linha CT11 dos 2 `.txt` |
+| CT12 | `registrarSaida` | P1 (limite) | `"A001"`, 11 | arquivo padrão | `false` e não grava nada | `false`, nada gravado | Passou | `false`, nada gravado | Passou | linha CT12 dos 2 `.txt` |
+| CT13 | `registrarSaida` | P3 | `"A001"`, 5 | gravação falha (`IOException`) | informa a falha; `ultimaMovimentacao` não muda | `false`, falha sem aviso | **Falhou** | `IOException` (test double) | Passou | linha CT13 dos 2 `.txt` |
+| CT14 | `registrarSaida` | P2 (inválida) | `"A001"`, 0 | arquivo padrão | rejeita e não grava | `true` | **Falhou** | `IllegalArgumentException` | Passou | linha CT14 dos 2 `.txt` |
+| CT15 | `registrarSaida` | P2 (inválida) | `"A001"`, -5 | arquivo padrão | rejeita e não grava | `true` | **Falhou** | `IllegalArgumentException` | Passou | linha CT15 dos 2 `.txt` |
+| CT16 | `registrarSaida` | P2 (inválida) | `"Z999"`, 0 | arquivo padrão | rejeita, o produto não existe | `true` | **Falhou** | `IllegalArgumentException` | Passou | linha CT16 dos 2 `.txt` |
+| CT17 | `registrarSaida` | P2 duas vezes | `"A001"`, 10 e `"A001"`, 10 | arquivo padrão (saldo 10) | 1ª `true`, 2ª `false` | 1ª e 2ª `true`; `estoque.csv` não mudou | **Falhou** | 1ª `true` e 2ª `false` | Passou | linha CT17 dos 2 `.txt` |
+| CT18 | `registrarSaida` | P4 da consulta e P1 (no original) | `"A001"`, 5 | `estoque.csv` não existe | informa o erro de leitura, não retorna `false` como se fosse saldo insuficiente | `false` (arquivo ausente tratado como saldo insuficiente) | **Falhou** | `NoSuchFileException` | Passou | linha CT18 dos 2 `.txt` |
+| CT19 | `registrarSaida` | P2 (só revisada) | `"A001;999"`, 1 | arquivo padrão | rejeita e não grava | não executado (caso só da revisada) | - | `IllegalArgumentException`, nada gravado | Passou | linha CT19 do `.txt` do revisado |
+| CT20 | `registrarSaida` | P2 com acesso ao mesmo tempo (só revisada) | 8 threads, `"A001"`, 5 | arquivo padrão (saldo 10) | só 2 saídas aceitas e 2 linhas no arquivo | não executado (caso só da revisada) | - | 2 aceitas de 8; arquivo com 2 linhas | Passou | linha CT20 do `.txt` do revisado |
+
+**Evidência de cada caso:** cada linha dos arquivos `evidencias/saida_testes_original.txt` e `evidencias/saida_testes_revisado.txt` começa com o ID do caso e mostra a situação e o que foi observado. Dá para reproduzir rodando os comandos da seção 2.
 
 O que dá para ver nos resultados:
 
 - Os casos normais passam nas duas versões, então a revisão não estragou o que já funcionava.
 - O CT10 e o CT11 mostram o problema do arquivo não fechado: o original diz que deu certo, mas o `movimentacoes.txt` fica vazio. Na revisada a linha é gravada.
 - O CT17 mostra que no original o saldo nunca diminuía, e na revisada ele diminui.
+- O CT18 mostra a ligação entre os dois métodos: no original, um erro de leitura da consulta vira "saldo insuficiente" no `registrarSaida`. Na revisada, o erro chega até quem chamou.
 
 ### 7.3 Caminhos difíceis de provocar e como simulei
 

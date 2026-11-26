@@ -44,7 +44,7 @@ public class TestesOriginal {
         {"CT15", "registrarSaida", "quantidade negativa"},
         {"CT16", "registrarSaida", "codigo inexistente com quantidade 0"},
         {"CT17", "registrarSaida", "duas saidas de 10 (saldo 10)"},
-        {"CT18", "registrarSaida", "estoque.csv inexistente com quantidade 0"},
+        {"CT18", "registrarSaida", "estoque.csv inexistente com quantidade 5"},
     };
 
     public static void main(String[] args) throws Exception {
@@ -226,9 +226,9 @@ public class TestesOriginal {
                 resultado(ok, "1a=" + r1 + " 2a=" + r2 + " estoque.csv=" + lerArquivo("estoque.csv"));
                 break;
             }
-            case "CT18": {   // estoque.csv inexistente com quantidade 0 -> nao pode retornar true
-                Object r = tentar(() -> e.registrarSaida("A001", 0));
-                resultado(rejeitou(r), descrever(r));
+            case "CT18": {   // estoque.csv inexistente: deve informar o erro de leitura, e nao devolver false como se fosse saldo insuficiente
+                Object r = tentar(() -> e.registrarSaida("A001", 5));
+                resultado(r instanceof Throwable, descrever(r));
                 break;
             }
             default:
