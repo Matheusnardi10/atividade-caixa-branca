@@ -129,6 +129,7 @@ Convenções que usei:
 - O `break` entrou como uma aresta que sai do laço.
 - Eu modelei o desvio para o `catch` de `IOException`, porque é a única exceção que o código captura. Esses desvios aparecem tracejados em vermelho nos desenhos.
 - `NumberFormatException` e `ArrayIndexOutOfBoundsException` (linha 18) **não** foram modeladas, porque o código não captura essas exceções.
+- O nó N1 é a entrada do método (o primeiro bloco de comandos) e o nó de saída é o `return` (N7 nos dois grafos). Não criei nós separados para entrada e saída.
 
 Os dois métodos se ligam assim: o `registrarSaida` chama o `consultarQuantidade` logo no primeiro nó (N1). Quando a consulta dá erro de leitura, ela devolve 0 e esse 0 vai para o `if` do `registrarSaida`. Ou seja, um erro de leitura pode acabar virando "saldo insuficiente".
 
